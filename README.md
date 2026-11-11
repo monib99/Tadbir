@@ -28,6 +28,15 @@ Supabase, but **everything a user enters is encrypted on their own device before
 
 Code: `js/crypto.js` (encryption), `js/app.js` (app and accounts), `supabase/migrations` (database).
 
+## Languages and countries
+
+The interface is available in English, Pashto, Persian (Dari), Arabic and Urdu, with right-to-left layout
+for the last four. Translations live in `js/i18n.js`, one row per phrase; a phrase missing there falls
+back to English. The Pashto, Arabic and Urdu wording should be reviewed by a native speaker before launch.
+
+Each user picks a country in settings. It sets the currency symbol and the list of bill types (the UK
+list includes road tax, MOT, PCN, HMRC and council tax; other countries get a general list).
+
 ## Setup
 
 1. Create a Supabase project and run `supabase/migrations/0001_init.sql` in it.
@@ -38,7 +47,7 @@ Code: `js/crypto.js` (encryption), `js/app.js` (app and accounts), `supabase/mig
 
 ## Status
 
-Working: accounts, encryption, both recovery choices, light and dark themes, section picker, bills,
+Working: accounts, encryption, both recovery choices, five languages, country and currency, light and dark themes, section picker, bills,
 money, diary, loans, Ibadah checklist, data export, account deletion, offline shell.
 
 Not built yet: shared households (partner sees the same bills), phone notifications, App Store and

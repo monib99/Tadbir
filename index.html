@@ -10,7 +10,7 @@
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@500;700&display=swap" rel="stylesheet">
 <style>
 /* Layout idea: a pocket ledger. One column, summary first, rows you can tick, a tab bar under the thumb. */
 :root{
@@ -54,9 +54,9 @@ button{cursor:pointer}
 header.top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .brand{font-family:var(--display);font-weight:700;font-size:28px;letter-spacing:-.02em;margin:0}
 .brand span{color:var(--accent)}
-.brand .ar{font-family:"Noto Naskh Arabic","Geeza Pro","Segoe UI",serif;font-weight:600;font-size:26px;letter-spacing:0;margin-left:8px;color:var(--muted)}
+.brand .ar{font-family:"Noto Naskh Arabic","Geeza Pro","Segoe UI",serif;font-weight:600;font-size:26px;letter-spacing:0;margin-inline-start:8px;color:var(--muted)}
 .date{color:var(--muted);font-size:14px}
-.notice{background:var(--warn-soft);color:var(--ink);border-left:4px solid var(--warn);padding:10px 12px;border-radius:6px;font-size:14px}
+.notice{background:var(--warn-soft);color:var(--ink);border-inline-start:4px solid var(--warn);padding:10px 12px;border-radius:6px;font-size:14px}
 h2{font-family:var(--display);font-weight:700;font-size:20px;margin:0;letter-spacing:-.01em;text-wrap:balance}
 .sec{display:flex;flex-direction:column;gap:10px}
 .sec-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -70,10 +70,10 @@ h2{font-family:var(--display);font-weight:700;font-size:20px;margin:0;letter-spa
 .split{display:flex;gap:16px;flex-wrap:wrap}
 .split div{display:flex;flex-direction:column}
 .list{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.row{display:flex;align-items:center;gap:10px;padding:12px;border-top:1px solid var(--line);border-left:4px solid transparent}
+.row{display:flex;align-items:center;gap:10px;padding:12px;border-top:1px solid var(--line);border-inline-start:4px solid transparent}
 .row:first-child{border-top:0}
-.row.crit{border-left-color:var(--crit)} .row.warn{border-left-color:var(--warn)} .row.good{border-left-color:var(--good)}
-.row .main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;background:none;border:0;padding:0;text-align:left}
+.row.crit{border-inline-start-color:var(--crit)} .row.warn{border-inline-start-color:var(--warn)} .row.good{border-inline-start-color:var(--good)}
+.row .main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;background:none;border:0;padding:0;text-align:start}
 .row .t{font-weight:600;overflow-wrap:anywhere}
 .row .s{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
 .row .amt{font-weight:700;white-space:nowrap}
@@ -148,7 +148,7 @@ body{background:linear-gradient(180deg,var(--accent-soft) 0,var(--bg) 220px) no-
 .hero .split{gap:24px}
 .hero .split b{font-family:var(--display);font-size:20px}
 .hero .split span{font-size:13px;opacity:.8}
-.row.e-Business{border-left-color:var(--s-business)}.row.e-Personal{border-left-color:var(--s-personal)}.row.e-Volunteering{border-left-color:var(--s-volunteering)}.row.e-Development{border-left-color:var(--s-development)}.row.e-Faith{border-left-color:var(--s-faith)}
+.row.e-Business{border-inline-start-color:var(--s-business)}.row.e-Personal{border-inline-start-color:var(--s-personal)}.row.e-Volunteering{border-inline-start-color:var(--s-volunteering)}.row.e-Development{border-inline-start-color:var(--s-development)}.row.e-Faith{border-inline-start-color:var(--s-faith)}
 .ring{width:40px;height:40px;flex:none}
 .ring circle{fill:none;stroke-width:5}
 .ring .bg{stroke:var(--line)}
@@ -164,11 +164,11 @@ nav.tabs a.on{background:var(--accent-soft);color:var(--accent)}
 .ltrack i{display:block;height:100%;background:var(--accent);border-radius:99px}
 nav.tabs a{font-size:12px}
 .hright{display:flex;align-items:center;gap:10px}
-.ar-s{font-family:"Noto Naskh Arabic","Geeza Pro","Segoe UI",serif;font-weight:600;color:var(--muted);margin-left:6px}
+.ar-s{font-family:"Noto Naskh Arabic","Geeza Pro","Segoe UI",serif;font-weight:600;color:var(--muted);margin-inline-start:6px}
 .lead{color:var(--muted);margin:0;font-size:15px}
 .row.foot{flex-wrap:wrap}.row.foot .main{flex:1 1 150px}
 .code{font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.04em;word-break:break-all;font-size:15px}
-.linkbtn{background:none;border:0;color:var(--accent);padding:10px 0;text-align:left;font-weight:600;min-height:44px}
+.linkbtn{background:none;border:0;color:var(--accent);padding:10px 0;text-align:start;font-weight:600;min-height:44px}
 .auth{display:flex;flex-direction:column;gap:12px}
 .auth .btn[disabled]{opacity:.6}
 .ripple{position:fixed;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--accent);opacity:.32;pointer-events:none;z-index:30;animation:ripple .5s ease-out forwards}
@@ -177,7 +177,7 @@ nav.tabs a{font-size:12px}
 .check.pop{animation:pop .38s ease-out}
 .btn,.chip,.iconbtn{transition:transform .12s ease,filter .12s ease}
 .btn:active,.iconbtn:active{filter:brightness(.92)}
-.brand{display:flex;align-items:center;gap:8px}.brand b{font-weight:inherit}.brand img{border-radius:9px;display:block}.brand .ar{margin-left:4px}
+.brand{display:flex;align-items:center;gap:8px}.brand b{font-weight:inherit}.brand img{border-radius:9px;display:block}.brand .ar{margin-inline-start:4px}
 .ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .badge{width:38px;height:38px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}
 .badge.big{width:56px;height:56px;border-radius:18px}.badge.big .ic{width:28px;height:28px}
@@ -202,6 +202,15 @@ nav.tabs a{font-size:12px}
 .trend{width:100%;height:auto;display:block}.tr-l{font-size:10px;fill:var(--muted);font-family:var(--body)}
 .tr-g{stroke:var(--line);stroke-width:1;stroke-dasharray:3 4}.tr-b{stroke:var(--muted);stroke-width:1}
 .sec-head .legend{font-size:13px}
+:root[dir="rtl"]{--body:"Noto Naskh Arabic","Geeza Pro","Segoe UI",Tahoma,sans-serif;--display:"Noto Naskh Arabic","Geeza Pro","Segoe UI",Tahoma,sans-serif}
+:root[dir="rtl"] body{line-height:1.7}
+:root[dir="rtl"] .brand,:root[dir="rtl"] h2,:root[dir="rtl"] .tile .v,:root[dir="rtl"] .hero .big{letter-spacing:0}
+.amt,.tile .v,.hero .big,.hero .split b,.donut b,.code{direction:ltr;unicode-bidi:isolate}
+.brand .ar,.welcome .w-ar{font-family:"Noto Nastaliq Urdu","Noto Naskh Arabic","Geeza Pro",serif;font-weight:700;line-height:2}
+.brand .ar{font-size:22px}.welcome .w-ar{font-size:44px;line-height:1.9;padding-bottom:6px}
+.brand b{direction:ltr;unicode-bidi:isolate}
+.tile .v,.hero .big{align-self:flex-start}
+:root[dir="rtl"] .monthnav .iconbtn{transform:scaleX(-1)}
 @keyframes up{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:no-preference){
@@ -217,19 +226,19 @@ nav.tabs a{font-size:12px}
 <body>
 <div class="wrap">
   <header class="top">
-    <h1 class="brand"><img src="icons/icon.svg" alt="" width="30" height="30"><b>Tad<span>bir</span></b> <span class="ar" lang="ar" dir="rtl">تدبير</span></h1>
-    <div class="hright"><div class="date" id="dateline"></div><button class="iconbtn" id="gear" aria-label="Choose which sections to use"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button></div>
+    <h1 class="brand"><img src="icons/icon.svg" alt="" width="30" height="30"><b>Tad<span>bir</span></b> <span class="ar" lang="fa" dir="rtl">تدبیر</span></h1>
+    <div class="hright"><div class="date" id="dateline"></div><button class="iconbtn" id="gear" aria-label="Settings" data-t-label="Settings"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button></div>
   </header>
   <div class="notice" id="notice" hidden></div>
   <main id="view"></main>
 </div>
 
 <nav class="tabs" aria-label="Sections"><div>
-  <a href="#today" data-v="today"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>Today</a>
-  <a href="#bills" data-v="bills"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Bills</a>
-  <a href="#money" data-v="money"><svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M21 19H3"/></svg>Money</a>
-  <a href="#diary" data-v="diary"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Diary</a>
-  <a href="#loans" data-v="loans"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Loans</a>
+  <a href="#today" data-v="today"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg><span data-t="Today">Today</span></a>
+  <a href="#bills" data-v="bills"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg><span data-t="Bills">Bills</span></a>
+  <a href="#money" data-v="money"><svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M21 19H3"/></svg><span data-t="Money">Money</span></a>
+  <a href="#diary" data-v="diary"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span data-t="Diary">Diary</span></a>
+  <a href="#loans" data-v="loans"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span data-t="Loans">Loans</span></a>
 </div></nav>
 
 <div class="sheet-bg" id="sheetbg"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheettitle">
@@ -240,6 +249,7 @@ nav.tabs a{font-size:12px}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/crypto.js"></script>
 <script src="js/app.js"></script>
 </body>
