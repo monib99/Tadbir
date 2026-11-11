@@ -187,10 +187,10 @@ function trend(m,scope){
   if(!max)return"";
   var W=320,H=150,base=118,top=18,gw=W/6,bw=16,bars="";
   ms.forEach(function(x,i){var cx=gw*i+gw/2,hi=(base-top)*x.inn/max,ho=(base-top)*x.out/max;
-    bars+='<rect x="'+(cx-bw-2)+'" y="'+(base-hi).toFixed(1)+'" width="'+bw+'" height="'+Math.max(hi,x.inn?2:0).toFixed(1)+'" rx="4" fill="var(--accent)"><title>'+esc(x.l+" in "+money(x.inn))+'</title></rect>'+
-      '<rect x="'+(cx+2)+'" y="'+(base-ho).toFixed(1)+'" width="'+bw+'" height="'+Math.max(ho,x.out?2:0).toFixed(1)+'" rx="4" fill="var(--s-volunteering)"><title>'+esc(x.l+" out "+money(x.out))+'</title></rect>'+
+    bars+='<rect x="'+(cx-bw-2)+'" y="'+(base-hi).toFixed(1)+'" width="'+bw+'" height="'+Math.max(hi,x.inn?2:0).toFixed(1)+'" rx="4" fill="var(--in)"><title>'+esc(x.l+" in "+money(x.inn))+'</title></rect>'+
+      '<rect x="'+(cx+2)+'" y="'+(base-ho).toFixed(1)+'" width="'+bw+'" height="'+Math.max(ho,x.out?2:0).toFixed(1)+'" rx="4" fill="var(--out)"><title>'+esc(x.l+" out "+money(x.out))+'</title></rect>'+
       '<text x="'+cx+'" y="'+(base+16)+'" text-anchor="middle" class="tr-l">'+esc(x.l)+'</text>'});
-  return'<section class="sec"><div class="sec-head"><h2>'+T("Last 6 months")+'</h2><div class="legend"><span><span class="dot" style="background:var(--accent)"></span>'+T("In")+'</span><span><span class="dot" style="background:var(--s-volunteering)"></span>'+T("Out")+'</span></div></div>'+
+  return'<section class="sec"><div class="sec-head"><h2>'+T("Last 6 months")+'</h2><div class="legend"><span><span class="dot" style="background:var(--in)"></span>'+T("In")+'</span><span><span class="dot" style="background:var(--out)"></span>'+T("Out")+'</span></div></div>'+
     '<div class="list" style="padding:10px 8px 4px"><svg viewBox="0 0 '+W+' '+H+'" class="trend" role="img" aria-label="'+T("Money in and out for the last six months")+'">'+
     '<line x1="0" x2="'+W+'" y1="'+top+'" y2="'+top+'" class="tr-g"/><line x1="0" x2="'+W+'" y1="'+((base+top)/2)+'" y2="'+((base+top)/2)+'" class="tr-g"/><line x1="0" x2="'+W+'" y1="'+base+'" y2="'+base+'" class="tr-b"/>'+
     '<text x="2" y="'+(top-5)+'" class="tr-l">'+esc(money(Math.round(max)))+'</text>'+bars+'</svg></div></section>';
@@ -233,7 +233,7 @@ function viewToday(){
       '<div class="split"><div><b>'+money(inn)+'</b><span>'+T("In")+'</span></div><div><b>'+money(out)+'</b><span>'+T("Out")+'</span></div>'+(inn?'<div><b>'+pct+'%</b><span>'+T("of income spent")+'</span></div>':'')+'</div></div>';
   }else h+='<p class="lead">'+greet+'</p>';
   if(has("bills"))h+='<div class="tiles two"><div class="tile'+(overdue.length?" crit":"")+'"><span class="k">'+T("Overdue")+'</span><span class="v">'+overdue.length+'</span><span class="n">'+(overdue.length?T("Pay these first"):T("Nothing late"))+'</span></div>'+
-    '<div class="tile"><span class="k">'+T("Due in 7 days")+'</span><span class="v">'+money(soonSum)+'</span><span class="n">'+T("{n} payments",{n:soon.length})+'</span></div></div>';
+    '<div class="tile"><span class="k">'+T("Due in 7 days")+'</span><span class="v">'+money(soonSum)+'</span><span class="n">'+(soon.length===1?T("1 payment"):T("{n} payments",{n:soon.length}))+'</span></div></div>';
   h+='</section>';
   var attention=overdue.concat(soon);
   if(has("bills")||dueLoans.length)h+='<section class="sec"><div class="sec-head"><h2>'+T("Payments needing attention")+'</h2>'+(has("bills")?'<button class="btn small ghost" data-act="add-bill">'+T("Add bill")+'</button>':'')+'</div><div class="list">'+
@@ -562,7 +562,7 @@ async function afterAuth(user,kek,email){
 }
 function theme(){var t=remembered("tadbir-theme");return t==="light"||t==="dark"?t:"auto"}
 function applyTheme(){var t=theme(),el=document.documentElement;if(t==="auto")el.removeAttribute("data-theme");else el.setAttribute("data-theme",t);
-  var dark=t==="dark"||(t==="auto"&&window.matchMedia("(prefers-color-scheme:dark)").matches),m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",dark?"#0e1513":"#0e4a3c")}
+  var dark=t==="dark"||(t==="auto"&&window.matchMedia("(prefers-color-scheme:dark)").matches),m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",dark?"#04140e":"#06281e")}
 function remembered(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lock(){K=null;S.uid=null;S.unlocked=false;S.privLoaded=false;S.bills=[];S.txns=[];S.diary=[];S.priv=[];S.editMods=false;S.pick=null;S.screen="signin";note("");render()}
 $("view").addEventListener("submit",async function(e){

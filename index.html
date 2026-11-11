@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tadbir</title>
 <meta name="description" content="Tadbir: private, encrypted organiser for bills, money, diary and daily practice.">
-<meta name="theme-color" content="#0e4a3c">
+<meta name="theme-color" content="#06281e">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -14,34 +14,35 @@
 <style>
 /* Layout idea: a pocket ledger. One column, summary first, rows you can tick, a tab bar under the thumb. */
 :root{
-  --bg:#eef2f0; --surface:#ffffff; --ink:#14231f; --muted:#5a6a64; --line:#d6dedb;
-  --accent:#0f6b54; --accent-ink:#ffffff; --accent-soft:#dcefe8;
-  --good:#1d7f49; --warn:#a8690c; --crit:#c0332a;
-  --good-soft:#dff2e6; --warn-soft:#fbeed3; --crit-soft:#fbe1de;
-  --s-business:#2f5fd0; --s-personal:#b4487a; --s-volunteering:#c2740f; --s-development:#6a4bc4; --s-faith:#0f8a6a;
-  --hero:#0e4a3c; --hero-ink:#f1fbf6; --gold:#f2c14e; --shadow:0 1px 2px rgba(20,35,31,.05),0 8px 24px rgba(20,35,31,.07);
+  /* Palette drawn from the Tadbir logo: deep emerald, gold and ivory. Light theme leads with emerald on ivory; dark theme leads with gold on emerald. */
+  --bg:#f5f1e6; --surface:#fffdf7; --ink:#0c1f18; --muted:#5b665e; --line:#e0d9c6; --wash:#e7ecd9;
+  --accent:#0b4f3c; --accent-ink:#fdf6e3; --accent-soft:#e2ebdc;
+  --good:#17703f; --warn:#8f5400; --crit:#b8322a;
+  --good-soft:#dcefdf; --warn-soft:#f8e8c4; --crit-soft:#f9ddd8;
+  --s-business:#2b5fc7; --s-personal:#a8457a; --s-volunteering:#b0620c; --s-development:#6447b8; --s-faith:#0e7d5f;
+  --hero:#06281e; --hero-ink:#f6ecd4; --gold:#eeb02a; --in:#0b4f3c; --out:#b47806; --shadow:0 1px 2px rgba(12,31,24,.05),0 8px 24px rgba(12,31,24,.08);
   --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
   --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --bg:#0e1513; --surface:#17201d; --ink:#e7efeb; --muted:#94a59e; --line:#2a3632;
-    --accent:#4cc3a0; --accent-ink:#06241b; --accent-soft:#16382f;
-    --good:#5fd08c; --warn:#e7b04f; --crit:#f0796f;
-    --good-soft:#143524; --warn-soft:#3a2d10; --crit-soft:#3f1a17;
-    --hero:#143f34; --hero-ink:#eafaf3; --gold:#f2c14e; --shadow:0 1px 2px rgba(0,0,0,.3);
-    --s-business:#7da0ff; --s-personal:#e88ab5; --s-volunteering:#eda94a; --s-development:#a892f0; --s-faith:#4cc3a0;
+    --bg:#04140e; --surface:#0b2219; --ink:#f3ead3; --muted:#a3b0a4; --line:#1c382b; --wash:#0a2a1e;
+    --accent:#e8b23a; --accent-ink:#06180f; --accent-soft:#263319;
+    --good:#62cf8e; --warn:#f29a55; --crit:#f48a80;
+    --good-soft:#12331f; --warn-soft:#3b2414; --crit-soft:#3d1915;
+    --s-business:#86a6ff; --s-personal:#ec90ba; --s-volunteering:#f08a4b; --s-development:#ad98f5; --s-faith:#5cc9a4;
+    --hero:#0a3023; --hero-ink:#f6ecd4; --gold:#f0b83c; --in:#5cc9a4; --out:#f0b83c; --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 28px rgba(0,0,0,.28);
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0e1513; --surface:#17201d; --ink:#e7efeb; --muted:#94a59e; --line:#2a3632;
-  --accent:#4cc3a0; --accent-ink:#06241b; --accent-soft:#16382f;
-  --good:#5fd08c; --warn:#e7b04f; --crit:#f0796f;
-  --good-soft:#143524; --warn-soft:#3a2d10; --crit-soft:#3f1a17;
-    --hero:#143f34; --hero-ink:#eafaf3; --gold:#f2c14e; --shadow:0 1px 2px rgba(0,0,0,.3);
-  --s-business:#7da0ff; --s-personal:#e88ab5; --s-volunteering:#eda94a; --s-development:#a892f0; --s-faith:#4cc3a0;
+  --bg:#04140e; --surface:#0b2219; --ink:#f3ead3; --muted:#a3b0a4; --line:#1c382b; --wash:#0a2a1e;
+  --accent:#e8b23a; --accent-ink:#06180f; --accent-soft:#263319;
+  --good:#62cf8e; --warn:#f29a55; --crit:#f48a80;
+  --good-soft:#12331f; --warn-soft:#3b2414; --crit-soft:#3d1915;
+  --s-business:#86a6ff; --s-personal:#ec90ba; --s-volunteering:#f08a4b; --s-development:#ad98f5; --s-faith:#5cc9a4;
+  --hero:#0a3023; --hero-ink:#f6ecd4; --gold:#f0b83c; --in:#5cc9a4; --out:#f0b83c; --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 28px rgba(0,0,0,.28);
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -134,7 +135,7 @@ nav.tabs a.on{color:var(--accent);border-top-color:var(--accent)}
 .toast{position:fixed;left:16px;right:16px;bottom:84px;margin:0 auto;max-width:420px;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:14px;text-align:center;display:none;z-index:20}
 .toast.show{display:block}
 
-body{background:linear-gradient(180deg,var(--accent-soft) 0,var(--bg) 220px) no-repeat var(--bg)}
+body{background:linear-gradient(180deg,var(--wash) 0,var(--bg) 240px) no-repeat var(--bg)}
 .wrap{padding-bottom:128px}
 .list,.tile,.cal{border-radius:16px;box-shadow:var(--shadow)}
 .tiles.two{grid-template-columns:repeat(2,1fr)}
@@ -164,7 +165,7 @@ nav.tabs a.on{background:var(--accent-soft);color:var(--accent)}
 .ltrack i{display:block;height:100%;background:var(--accent);border-radius:99px}
 nav.tabs a{font-size:12px}
 .hright{display:flex;align-items:center;gap:10px}
-.ar-s{font-family:"Noto Naskh Arabic","Geeza Pro","Segoe UI",serif;font-weight:600;color:var(--muted);margin-inline-start:6px}
+.ar-s{font-family:"Noto Naskh Arabic","Geeza Pro","Segoe UI",serif;font-weight:600;color:var(--muted);margin:0 6px}
 .lead{color:var(--muted);margin:0;font-size:15px}
 .row.foot{flex-wrap:wrap}.row.foot .main{flex:1 1 150px}
 .code{font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.04em;word-break:break-all;font-size:15px}
@@ -213,6 +214,11 @@ nav.tabs a{font-size:12px}
 :root[dir="rtl"] .monthnav .iconbtn{transform:scaleX(-1)}
 .brand img{border-radius:11px}
 .welcome .w-logo{width:148px;height:148px;border-radius:26px;display:block;box-shadow:0 6px 22px rgba(0,0,0,.35)}
+.hero,.welcome{border:1px solid color-mix(in srgb,var(--gold) 28%,transparent)}
+.hero .meter i{background:linear-gradient(90deg,var(--gold),#f7d67a)}
+nav.tabs a.on{box-shadow:inset 0 -2px 0 var(--gold)}
+.sec-head h2,section>h2{position:relative}
+.pill{letter-spacing:.01em}
 @keyframes up{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:no-preference){
