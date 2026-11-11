@@ -7,8 +7,8 @@
 <meta name="description" content="Tadbir: private, encrypted organiser for bills, money, diary and daily practice.">
 <meta name="theme-color" content="#0e4a3c">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -211,6 +211,8 @@ nav.tabs a{font-size:12px}
 .brand b{direction:ltr;unicode-bidi:isolate}
 .tile .v,.hero .big{align-self:flex-start}
 :root[dir="rtl"] .monthnav .iconbtn{transform:scaleX(-1)}
+.brand img{border-radius:11px}
+.welcome .w-logo{width:148px;height:148px;border-radius:26px;display:block;box-shadow:0 6px 22px rgba(0,0,0,.35)}
 @keyframes up{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:no-preference){
@@ -226,7 +228,7 @@ nav.tabs a{font-size:12px}
 <body>
 <div class="wrap">
   <header class="top">
-    <h1 class="brand"><img src="icons/icon.svg" alt="" width="30" height="30"><b>Tad<span>bir</span></b> <span class="ar" lang="fa" dir="rtl">تدبیر</span></h1>
+    <h1 class="brand"><img src="icons/logo-96.png" alt="" width="40" height="40"><b>Tad<span>bir</span></b></h1>
     <div class="hright"><div class="date" id="dateline"></div><button class="iconbtn" id="gear" aria-label="Settings" data-t-label="Settings"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button></div>
   </header>
   <div class="notice" id="notice" hidden></div>
