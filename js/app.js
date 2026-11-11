@@ -92,7 +92,7 @@ function needsSetup(){return S.privLoaded&&!settings()}
 function viewSetup(){
   if(!S.pick){S.pick={};(settings()?mods():["bills","money","diary"]).forEach(function(m){S.pick[m]=1})}
   return'<section class="sec"><h2>Choose what you want to use</h2><p class="lead">Pick only the parts you need. You can change this any time with the button at the top right.</p><div class="list">'+
-    MODULES.map(function(m){var on=!!S.pick[m[0]];return'<div class="row"><button class="check" aria-pressed="'+on+'" aria-label="'+esc(m[1])+'" data-act="toggle-mod" data-id="'+m[0]+'"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></button><div class="main"><span class="t">'+esc(m[1])+(m[0]==="ibadah"?'<span class="ar-s" lang="ar" dir="rtl">عبادة</span>':'')+'</span><span class="s">'+esc(m[2])+'</span></div></div>'}).join("")+
+    MODULES.map(function(m){var on=!!S.pick[m[0]];return'<div class="row"><button class="check" aria-pressed="'+on+'" aria-label="'+esc(m[1])+'" data-act="toggle-mod" data-id="'+m[0]+'"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></button>'+badge(MOD_ICON[m[0]])+'<div class="main"><span class="t">'+esc(m[1])+(m[0]==="ibadah"?'<span class="ar-s" lang="ar" dir="rtl">عبادة</span>':'')+'</span><span class="s">'+esc(m[2])+'</span></div></div>'}).join("")+
     '</div><div class="actions"><button class="btn" data-act="save-mods">Save</button></div></section>'+
     '<section class="sec"><h2>Appearance</h2><div class="chips">'+[["auto","Match my phone"],["light","Light"],["dark","Dark"]].map(function(t){return'<button class="chip" aria-pressed="'+(theme()===t[0])+'" data-act="theme" data-t="'+t[0]+'">'+t[1]+'</button>'}).join("")+'</div></section>'+
     (S.unlocked?'<section class="sec"><h2>Your account</h2><div class="list"><div class="row"><div class="main"><span class="t">Download my data</span><span class="s">A readable copy of everything you have entered</span></div><button class="btn small ghost" data-act="export">Download</button></div>'+
@@ -116,31 +116,73 @@ function loanRow(l){
   var left=loanLeft(l),paid=loanPaid(l),st={cls:"",label:""};
   if(left<=0)st={cls:"good",label:"Settled"};else if(l.due)st=billStatus({due:l.due});
   var pct=+l.amount?Math.min(100,Math.round(100*paid/l.amount)):0;
-  return'<div class="row '+st.cls+'"><button class="main" data-act="edit-loan" data-id="'+esc(l.id)+'"><span class="t">'+esc(l.name)+'</span>'+
+  return'<div class="row '+st.cls+'">'+badge("coins")+'<button class="main" data-act="edit-loan" data-id="'+esc(l.id)+'"><span class="t">'+esc(l.name)+'</span>'+
     '<span class="s">'+(l.direction==="owed"?"Owes me":"I owe")+' · '+money(paid)+' of '+money(l.amount)+' repaid</span>'+
     (st.label?'<span><span class="pill '+st.cls+'">'+esc(st.label)+'</span></span>':'')+
     '<div class="ltrack"><i style="width:'+pct+'%"></i></div></button>'+
-    '<span class="amt">'+money(left)+'</span>'+(left>0?'<button class="btn small" data-act="pay-loan" data-id="'+esc(l.id)+'">Record payment</button>':'')+'</div>';
+    '<div class="rcol"><span class="amt">'+money(left)+'</span>'+(left>0?'<button class="btn small" data-act="pay-loan" data-id="'+esc(l.id)+'">Repaid</button>':'')+'</div></div>';
 }
 function viewLoans(){
   var ls=loans().sort(function(a,b){return(loanLeft(b)>0)-(loanLeft(a)>0)||((a.due||"9")<(b.due||"9")?-1:1)});
   var owe=0,owed=0;ls.forEach(function(l){if(l.direction==="owed")owed+=loanLeft(l);else owe+=loanLeft(l)});
   var h='<section class="sec"><div class="sec-head"><h2>Private loans</h2>'+'<button class="btn small" data-act="add-loan">Add loan</button>'+'</div>';
   h+='<div class="tiles two"><div class="tile"><span class="k">I still owe</span><span class="v">'+money(owe)+'</span></div><div class="tile"><span class="k">Still owed to me</span><span class="v">'+money(owed)+'</span></div></div>'+
-    '<div class="list">'+(ls.length?ls.map(loanRow).join(""):'<div class="empty">No loans recorded. Add money you have borrowed or lent.</div>')+'</div>'+
+    '<div class="list">'+(ls.length?ls.map(loanRow).join(""):emptyState("coins","No loans yet","Keep track of money you have borrowed or lent, and what is left to repay.","add-loan","Add a loan"))+'</div>'+
     '<p style="color:var(--muted);font-size:13px;margin:0">Loans are encrypted on your device like everything else, and they are kept out of your Money totals.</p></section>';
   return h;
 }
+/* ---------- icons, empty states, charts ---------- */
+var ICONS={home:"M4 11l8-7 8 7v9H4z M10 20v-6h4v6",bolt:"M13 3L5 14h6l-1 7 8-11h-6z",shield:"M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z",
+  car:"M5 16l1.5-5.5A2 2 0 0 1 8.4 9h7.2a2 2 0 0 1 1.9 1.5L19 16M4 16h16v3H4z M7.5 19v1.5M16.5 19v1.5",wrench:"M15 6a4 4 0 0 0-5 5l-6 6 2 2 6-6a4 4 0 0 0 5-5l-2.5 2.5-2-2z",
+  alert:"M12 4l9 16H3z M12 10v4 M12 17v.5",bank:"M4 10l8-5 8 5z M6 10v8M10 10v8M14 10v8M18 10v8 M4 20h16",building:"M6 20V5h9v15 M15 10h4v10 M4 20h17 M9 9h3M9 13h3",
+  coins:"M4 9a5 5 0 1 0 10 0a5 5 0 1 0-10 0 M14.5 10.5a5 5 0 1 1-4 8",repeat:"M5 9a7 7 0 0 1 12-3l2 2M19 4v4h-4 M19 15a7 7 0 0 1-12 3l-2-2M5 20v-4h4",
+  dot:"M9 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0",box:"M4 8l8-4 8 4v8l-8 4-8-4z M4 8l8 4 8-4 M12 12v8",drop:"M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z",
+  food:"M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10 M16 3c-2 2-2 7 0 9v9",basket:"M4 10h16l-2 9H6z M8 10l4-6 4 6",
+  users:"M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M3 20c0-3 3-5 6-5s6 2 6 5 M17 11a3 3 0 1 0-1-5.8 M18 15c2 .6 3 2.2 3 5",tag:"M4 12V4h8l8 8-8 8z M8.5 8.5v.01",
+  wallet:"M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4z M4 7V6a2 2 0 0 1 2-2h10 M16 13.5v.01",plus:"M12 5v14M5 12h14",
+  receipt:"M6 3h12v18l-3-2-3 2-3-2-3 2z M9 8h6M9 12h6",chart:"M4 19V9M10 19V5M16 19v-7M21 19H3",calendar:"M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M3 10h18M8 3v4M16 3v4",
+  lock:"M5 13a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z M8 11V8a4 4 0 0 1 8 0v3",moon:"M19 14a8 8 0 1 1-9-10 6.5 6.5 0 0 0 9 10z",
+  sliders:"M4 7h10M18 7h2M4 17h2M10 17h10 M14 7a2 2 0 1 0 4 0a2 2 0 1 0-4 0 M6 17a2 2 0 1 0 4 0a2 2 0 1 0-4 0",bell:"M6 16V11a6 6 0 0 1 12 0v5l2 2H4z M10 20a2 2 0 0 0 4 0"};
+var CAT_ICON={"Rent":"home","Utilities":"bolt","Insurance":"shield","Road tax":"car","MOT":"wrench","PCN / fine":"alert","HMRC":"bank","Council tax":"building","Loan / finance":"coins","Subscription":"repeat","Other":"dot","Stock":"box","Fuel":"drop","Food":"food","Household":"basket","Wages paid":"users","Sales":"tag","Wages":"wallet","Other income":"plus"};
+var MOD_ICON={bills:"receipt",money:"chart",diary:"calendar",loans:"lock",ibadah:"moon"};
+function icon(n){return'<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="'+(ICONS[n]||ICONS.dot)+'"/></svg>'}
+function badge(n,cls){return'<span class="badge '+(cls||"")+'">'+icon(n)+'</span>'}
+function emptyState(ic,title,text,act,label,attrs){return'<div class="estate">'+badge(ic,"big")+'<b>'+esc(title)+'</b><span>'+esc(text)+'</span>'+(act?'<button class="btn small" data-act="'+act+'"'+(attrs||"")+'>'+esc(label)+'</button>':'')+'</div>'}
+var CHART_COLORS=["var(--s-business)","var(--s-faith)","var(--s-personal)","var(--s-volunteering)","var(--s-development)","var(--muted)"];
+function donut(cl,total){
+  var top=cl.slice(0,5),rest=cl.slice(5).reduce(function(s,c){return s+c[1]},0);if(rest>0)top.push(["Everything else",rest]);
+  var C=2*Math.PI*40,off=0,segs="";
+  top.forEach(function(c,i){var len=C*c[1]/total;segs+='<circle cx="60" cy="60" r="40" fill="none" stroke="'+CHART_COLORS[i]+'" stroke-width="18" stroke-dasharray="'+Math.max(0,len-1.5).toFixed(2)+' '+(C-Math.max(0,len-1.5)).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 60 60)"/>';off+=len});
+  return'<div class="donut"><svg viewBox="0 0 120 120" role="img" aria-label="Spending by category"><circle cx="60" cy="60" r="40" fill="none" stroke="var(--line)" stroke-width="18"/>'+segs+
+    '<text x="60" y="57" text-anchor="middle" class="dn-k">Spent</text><text x="60" y="72" text-anchor="middle" class="dn-v">'+esc(money(Math.round(total)))+'</text></svg>'+
+    '<ul>'+top.map(function(c,i){return'<li><i style="background:'+CHART_COLORS[i]+'"></i><span>'+esc(c[0])+'</span><b>'+money(c[1])+'</b><em>'+Math.round(100*c[1]/total)+'%</em></li>'}).join("")+'</ul></div>';
+}
+function trend(m,scope){
+  var ms=[],max=0;for(var i=5;i>=0;i--){var d=new Date(m.getFullYear(),m.getMonth()-i,1),inn=0,out=0;
+    S.txns.forEach(function(x){if(inMonth(x.date,d)&&(scope==="All"||(x.scope||"Personal")===scope)){if(x.type==="in")inn+=+x.amount||0;else out+=+x.amount||0}});
+    ms.push({l:d.toLocaleDateString("en-GB",{month:"short"}),inn:inn,out:out});max=Math.max(max,inn,out)}
+  if(!max)return"";
+  var W=320,H=150,base=118,top=18,gw=W/6,bw=16,bars="";
+  ms.forEach(function(x,i){var cx=gw*i+gw/2,hi=(base-top)*x.inn/max,ho=(base-top)*x.out/max;
+    bars+='<rect x="'+(cx-bw-2)+'" y="'+(base-hi).toFixed(1)+'" width="'+bw+'" height="'+Math.max(hi,x.inn?2:0).toFixed(1)+'" rx="4" fill="var(--accent)"><title>'+esc(x.l+" in "+money(x.inn))+'</title></rect>'+
+      '<rect x="'+(cx+2)+'" y="'+(base-ho).toFixed(1)+'" width="'+bw+'" height="'+Math.max(ho,x.out?2:0).toFixed(1)+'" rx="4" fill="var(--s-volunteering)"><title>'+esc(x.l+" out "+money(x.out))+'</title></rect>'+
+      '<text x="'+cx+'" y="'+(base+16)+'" text-anchor="middle" class="tr-l">'+esc(x.l)+'</text>'});
+  return'<section class="sec"><div class="sec-head"><h2>Last 6 months</h2><div class="legend"><span><span class="dot" style="background:var(--accent)"></span>In</span><span><span class="dot" style="background:var(--s-volunteering)"></span>Out</span></div></div>'+
+    '<div class="list" style="padding:10px 8px 4px"><svg viewBox="0 0 '+W+' '+H+'" class="trend" role="img" aria-label="Money in and out for the last six months">'+
+    '<line x1="0" x2="'+W+'" y1="'+top+'" y2="'+top+'" class="tr-g"/><line x1="0" x2="'+W+'" y1="'+((base+top)/2)+'" y2="'+((base+top)/2)+'" class="tr-g"/><line x1="0" x2="'+W+'" y1="'+base+'" y2="'+base+'" class="tr-b"/>'+
+    '<text x="2" y="'+(top-5)+'" class="tr-l">'+esc(money(Math.round(max)))+'</text>'+bars+'</svg></div></section>';
+}
+
 /* ---------- row builders ---------- */
 function billRow(b){var st=billStatus(b);
   var sub=[esc(b.category||"Bill"),esc(b.scope||"Personal")];
   if(b.repeat&&b.repeat!=="none")sub.push(esc((REPEATS.find(function(r){return r[0]===b.repeat})||[0,""])[1]));
   if(b.lastPaid)sub.push("Last paid "+fmtDate(b.lastPaid));
-  return'<div class="row '+st.cls+'">'+
+  return'<div class="row '+st.cls+'">'+badge(CAT_ICON[b.category]||"receipt")+
     '<button class="main" data-act="edit-bill" data-id="'+esc(b.id)+'"><span class="t">'+esc(b.name)+'</span>'+
     '<span class="s">'+sub.join(" · ")+'</span><span><span class="pill '+st.cls+'">'+esc(st.label)+'</span></span></button>'+
-    '<span class="amt">'+(b.amount?money(b.amount):'<span class="s">Amount not set</span>')+'</span>'+
-    (b.paid?'':'<button class="btn small" data-act="pay" data-id="'+esc(b.id)+'">Mark paid</button>')+'</div>';
+    '<div class="rcol"><span class="amt">'+(b.amount?money(b.amount):'<span class="s">No amount</span>')+'</span>'+
+    (b.paid?'':'<button class="btn small" data-act="pay" data-id="'+esc(b.id)+'">Mark paid</button>')+'</div></div>';
 }
 function entryRow(e,showDate){
   return'<div class="row e-'+esc(e.section)+(e.done?" done":"")+'">'+
@@ -176,7 +218,7 @@ function viewToday(){
   if(has("diary")){
     var es=entriesOn(t);
     h+='<section class="sec"><div class="sec-head"><h2>Today\'s diary</h2><button class="btn small ghost" data-act="add-entry" data-date="'+t+'">Add entry</button></div><div class="list">'+
-      (es.length?es.map(function(e){return entryRow(e)}).join(""):'<div class="empty">Nothing planned for today yet.</div>')+'</div></section>';
+      (es.length?es.map(function(e){return entryRow(e)}).join(""):emptyState("calendar","A clear day","Add an appointment, a job or a task for today.","add-entry","Add entry",' data-date="'+t+'"'))+'</div></section>';
     var late=entries().filter(function(e){return e.date<t&&!e.done}).sort(function(a,b){return a.date<b.date?-1:1}).slice(0,15);
     if(late.length)h+='<section class="sec"><div class="sec-head"><h2>Outstanding tasks</h2><span class="pill warn">'+late.length+' not done</span></div><div class="list">'+late.map(function(e){return entryRow(e,true)}).join("")+'</div></section>';
     var tm=entriesOn(addDays(t,1));
@@ -205,7 +247,7 @@ function viewBills(){
   return'<section class="sec"><div class="sec-head"><h2>Bills and deadlines</h2><button class="btn small" data-act="add-bill">Add bill</button></div>'+
     '<div class="chips"><button class="chip" aria-pressed="'+(S.billFilter==="open")+'" data-act="bill-filter" data-f="open">To pay · '+money(total)+'</button>'+
     '<button class="chip" aria-pressed="'+(S.billFilter==="paid")+'" data-act="bill-filter" data-f="paid">Paid one-offs</button></div>'+
-    '<div class="list">'+(list.length?list.map(billRow).join(""):'<div class="empty">'+(S.billFilter==="paid"?"No paid one-off bills yet.":"No bills yet. Add rent, insurance, road tax, PCNs and anything else with a deadline.")+'</div>')+'</div>'+
+    '<div class="list">'+(list.length?list.map(billRow).join(""):(S.billFilter==="paid"?emptyState("receipt","Nothing here yet","One-off bills you have paid will be listed here."):emptyState("receipt","Add your first bill","Rent, insurance, road tax, a PCN: anything with a date you must not miss.","add-bill","Add a bill")))+'</div>'+
     '<p class="s" style="color:var(--muted);font-size:13px;margin:0">Marking a repeating bill as paid moves it to its next due date and records the payment under Money, so you can see it has been paid once.</p></section>';
 }
 function viewMoney(){
@@ -219,9 +261,10 @@ function viewMoney(){
     '<div class="tiles"><div class="tile"><span class="k">In</span><span class="v">'+money(inn)+'</span></div><div class="tile"><span class="k">Out</span><span class="v">'+money(out)+'</span></div>'+
     '<div class="tile wide'+(inn-out<0?" crit":"")+'"><span class="k">Left over</span><span class="v">'+money(inn-out)+'</span><span class="n">'+(inn?Math.round(100*(inn-out)/inn)+"% of income":"Add your income to see what you keep")+'</span></div></div>'+
     '<div class="actions"><button class="btn" data-act="add-txn" data-type="in">Add income</button><button class="btn ghost" data-act="add-txn" data-type="out">Add spending</button></div></section>';
-  h+='<section class="sec"><h2>Where it went</h2><div class="list">'+(cl.length?'<div class="bars">'+cl.map(function(c){return'<div class="bar"><span>'+esc(c[0])+'</span><b>'+money(c[1])+'</b><div class="track"><div class="fill" style="width:'+Math.max(2,Math.round(100*c[1]/max))+'%"></div></div></div>'}).join("")+'</div>':'<div class="empty">No spending recorded this month.</div>')+'</div></section>';
+  h+=trend(m,S.scope);
+  h+='<section class="sec"><h2>Where it went</h2><div class="list">'+(cl.length?donut(cl,out):emptyState("chart","No spending this month","Add what you spend and you will see where it goes.","add-txn","Add spending",' data-type="out"'))+'</div></section>';
   h+='<section class="sec"><h2>Entries</h2><div class="list">'+(tx.length?tx.map(function(x){
-    return'<div class="row"><button class="main" data-act="edit-txn" data-id="'+esc(x.id)+'"><span class="t">'+esc(x.note||x.category||"Entry")+'</span><span class="s">'+fmtDate(x.date)+" · "+esc(x.category||"Other")+" · "+esc(x.scope||"Personal")+'</span></button><span class="amt '+(x.type==="in"?"in":"")+'">'+(x.type==="in"?"+":"-")+money(x.amount)+'</span></div>'}).join(""):'<div class="empty">Nothing recorded for this month.</div>')+'</div></section>';
+    return'<div class="row">'+badge(CAT_ICON[x.category]||(x.type==="in"?"plus":"dot"))+'<button class="main" data-act="edit-txn" data-id="'+esc(x.id)+'"><span class="t">'+esc(x.note||x.category||"Entry")+'</span><span class="s">'+fmtDate(x.date)+" · "+esc(x.scope||"Personal")+'</span></button><span class="amt '+(x.type==="in"?"in":"")+'">'+(x.type==="in"?"+":"-")+money(x.amount)+'</span></div>'}).join(""):'<div class="empty">Nothing recorded for this month.</div>')+'</div></section>';
   return h;
 }
 function viewDiary(){
@@ -238,7 +281,7 @@ function viewDiary(){
   h+='</div><div class="legend">'+secs().map(function(s){return'<span><span class="dot d-'+s+'"></span>'+s+'</span>'}).join("")+'<span><span class="dot d-bill"></span>Payment due</span></div></section>';
   var es=entriesOn(S.selDay),bs=S.bills.filter(function(b){return!b.paid&&b.due===S.selDay});
   h+='<section class="sec"><div class="sec-head"><h2>'+esc(fmtDate(S.selDay,true))+'</h2><button class="btn small" data-act="add-entry" data-date="'+S.selDay+'">Add entry</button></div><div class="list">'+
-    bs.map(billRow).join("")+es.map(entryRow).join("")+((bs.length||es.length)?"":'<div class="empty">Nothing on this day. Add an appointment, a job, or a note.</div>')+'</div></section>';
+    bs.map(billRow).join("")+es.map(entryRow).join("")+((bs.length||es.length)?"":emptyState("calendar","Nothing on this day","Add an appointment, a job or a note.","add-entry","Add entry",' data-date="'+S.selDay+'"'))+'</div></section>';
   if(S.selDay<=t&&has("ibadah"))h+=checklist(S.selDay);
   return h;
 }
@@ -297,6 +340,7 @@ $("sheetbg").addEventListener("click",function(e){
 });
 $("sheetform").addEventListener("change",function(e){
   if(e.target.id==="f-section"&&$("f-priv"))$("f-priv").checked=!!PRIVATE_BY_DEFAULT[e.target.value];
+  if(e.target.id==="f-category"&&$("f-repeat")&&e.target.value==="PCN / fine")$("f-repeat").value="none";
   if(e.target.id==="f-type"&&$("f-category")){var cats=e.target.value==="in"?IN_CATS:OUT_CATS;
     $("f-category").innerHTML=cats.map(function(c){return'<option>'+esc(c)+'</option>'}).join("")}
 });
@@ -449,7 +493,8 @@ function viewAuth(){
   if(sc==="code")return'<section class="sec"><h2>Save your recovery code</h2><p class="lead">Your data is encrypted with your password before it leaves this device, so nobody at Tadbir can read it or reset your password for you. If you forget your password, this code is the only way to get your data back. Write it down or keep it in a password manager.</p>'+
     '<div class="list"><div class="row"><div class="main"><span class="t code">'+esc(S.recoveryCode)+'</span></div><button class="btn small ghost" data-act="copy-code">Copy</button></div></div>'+
     '<div class="actions"><button class="btn" data-act="code-saved">I have saved it</button></div></section>';
-  var h='<section class="sec auth">';
+  var h=(sc==="signin"||sc==="signup"||!sc?'<div class="welcome"><span class="w-ar" lang="ar" dir="rtl">تدبير</span><p class="w-tag">Bills, money, diary and daily practice, kept in order in one calm place.</p>'+
+    '<ul><li>'+icon("lock")+'<span>Encrypted on your phone before anything is saved</span></li><li>'+icon("sliders")+'<span>Use only the sections you need</span></li><li>'+icon("bell")+'<span>See what is due before it is late</span></li></ul></div>':'')+'<section class="sec auth card">';
   if(sc==="signup")h+='<h2>Create your account</h2><p class="lead">Everything you enter is encrypted on your device. Only you can read it.</p>'+msg+'<form data-form="signup" class="auth" novalidate>'+
     authField("email","Email","email","email")+authField("password","Password (10 characters or more)","password","new-password")+authField("password2","Password again","password","new-password")+
     '<label class="field" for="f-recovery">If I forget my password<select id="f-recovery"><option value="easy">Reset it by email (easier)</option><option value="code">Use a recovery code (most private)</option></select></label>'+
@@ -466,7 +511,7 @@ function viewAuth(){
   }
   else h+='<h2>Sign in</h2><p class="lead">Your bills, money, diary and daily practice, encrypted so only you can read them.</p>'+msg+'<form data-form="signin" class="auth" novalidate>'+
     authField("email","Email","email","email")+authField("password","Password","password","current-password")+
-    '<button type="submit" class="btn">Sign in</button></form><button class="linkbtn" data-act="go" data-s="signup">Create an account</button><button class="linkbtn" data-act="go" data-s="forgot">Forgot your password?</button>';
+    '<button type="submit" class="btn">Sign in</button></form><button class="btn ghost" data-act="go" data-s="signup">Create an account</button><button class="linkbtn" data-act="go" data-s="forgot">Forgot your password?</button>';
   return h+'</section>';
 }
 async function afterAuth(user,kek,email){
