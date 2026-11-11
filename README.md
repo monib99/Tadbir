@@ -30,7 +30,7 @@ Code: `js/crypto.js` (encryption), `js/app.js` (app and accounts), `supabase/mig
 
 ## Languages and countries
 
-The interface is available in English, Pashto, Persian (Dari), Arabic and Urdu, with right-to-left layout
+The interface is available in English, Pashto, Dari (Afghan Persian), Arabic and Urdu, with right-to-left layout
 for the last four. Translations live in `js/i18n.js`, one row per phrase; a phrase missing there falls
 back to English. The Pashto, Arabic and Urdu wording should be reviewed by a native speaker before launch.
 

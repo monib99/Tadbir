@@ -14,7 +14,7 @@ var S={bills:[],txns:[],diary:[],priv:[],db:null,uid:null,view:"today",
 var queues={};
 
 /* ---------- language and country ---------- */
-var LANGS=[["en","English"],["ps","پښتو"],["fa","فارسی"],["ar","العربية"],["ur","اردو"]];
+var LANGS=[["en","English"],["ps","پښتو"],["fa","دری"],["ar","العربية"],["ur","اردو"]];
 var RTL={ps:1,fa:1,ar:1,ur:1};
 var COUNTRIES=[["GB","United Kingdom","£"],["AF","Afghanistan","؋"],["PK","Pakistan","Rs "],["IR","Iran","IRR "],["AE","United Arab Emirates","AED "],["SA","Saudi Arabia","SAR "],["QA","Qatar","QAR "],["TR","Türkiye","₺"],["DE","Germany","€"],["FR","France","€"],["NL","Netherlands","€"],["SE","Sweden","kr "],["US","United States","$"],["CA","Canada","$"],["AU","Australia","$"],["IN","India","₹"],["XX","Another country",""]];
 var GENERIC_BILL_CATS=["Rent","Utilities","Insurance","Vehicle tax","Vehicle test","Fine","Tax","Loan / finance","Subscription","Other"];
@@ -24,7 +24,7 @@ function pickLang(){var l=null;try{l=localStorage.getItem("tadbir-lang")}catch(e
   return LANGS.some(function(x){return x[0]===l})?l:"en"}
 function T(str,vars){var d=window.TADBIR_I18N&&window.TADBIR_I18N[LANG],out=(d&&d[str])||str;
   if(vars)Object.keys(vars).forEach(function(k){out=out.split("{"+k+"}").join(vars[k])});return out}
-function LOC(){return LANG==="en"?"en-GB":LANG+"-u-ca-gregory-nu-latn"}
+function LOC(){return LANG==="en"?"en-GB":(LANG==="fa"?"fa-AF":LANG)+"-u-ca-gregory-nu-latn"}
 function applyLang(){LANG=pickLang();var el=document.documentElement;el.lang=LANG;el.dir=RTL[LANG]?"rtl":"ltr";
   document.querySelectorAll("[data-t]").forEach(function(n){n.textContent=T(n.getAttribute("data-t"))});
   document.querySelectorAll("[data-t-label]").forEach(function(n){n.setAttribute("aria-label",T(n.getAttribute("data-t-label")))})}

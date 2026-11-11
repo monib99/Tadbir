@@ -1,4 +1,4 @@
-/* Tadbir translations. Each row: English, Pashto, Persian (Dari), Arabic, Urdu.
+/* Tadbir translations. Each row: English, Pashto, Persian, Arabic, Urdu. The Persian column is converted to Afghan Dari below.
    English is the key used in the code; a phrase missing here is shown in English.
    {n}, {d}, {name} and similar are filled in by the app and must stay as they are. */
 (function () {
@@ -296,5 +296,37 @@
   ];
   var out = { ps: {}, fa: {}, ar: {}, ur: {} }, order = ["ps", "fa", "ar", "ur"];
   ROWS.forEach(function (r) { order.forEach(function (l, i) { if (r[i + 1]) out[l][r[0]] = r[i + 1]; }); });
+
+  /* The Persian column is shown as Dari, as written in Afghanistan: common words are swapped first,
+     then whole phrases that need different wording. */
+  var DARI_WORDS = [["اطلاعات", "معلومات"], ["قبض", "بل"], ["درآمد", "عاید"], ["تلفن", "تلیفون"], ["کپی", "کاپی"], ["دانلود", "داونلود"],
+    ["ویرایش", "اصلاح"], ["فهرست", "لست"], ["مالیات", "مالیه"], ["دستمزد", "معاش"], ["کسب‌وکار", "کار و بار"], ["قرارها", "ملاقات‌ها"], ["قرار،", "ملاقات،"],
+    ["خرج", "مصرف"], ["دسته", "کتگوری"], ["مرورگر", "براوزر"], ["پایگاه داده", "دیتابیس"], ["پلاک", "نمبر پلیت"], ["شماره", "نمبر"], ["روش پرداخت", "طریقه پرداخت"],
+    ["سوئد", "سویدن"], ["آلمان", "جرمنی"], ["هلند", "هالند"], ["استرالیا", "آسترالیا"], ["ایالات متحده", "ایالات متحده امریکا"]];
+  Object.keys(out.fa).forEach(function (k) { DARI_WORDS.forEach(function (w) { out.fa[k] = out.fa[k].split(w[0]).join(w[1]); }); });
+  var DARI = {
+    "In": "عاید", "Out": "مصرف", "Money in": "پول آمده", "Money out": "پول رفته", "Money in or out": "آمده یا رفته",
+    "Money in and out for the last six months": "عاید و مصرف شش ماه گذشته",
+    "Add your income and spending to see what you keep": "عاید و مصرف خود را وارد کنید تا ببینید چه باقی می‌ماند",
+    "Add your income to see what you keep": "عاید خود را وارد کنید تا ببینید چه باقی می‌ماند",
+    "Income, spending and what is left each month": "عاید، مصرف و آنچه هر ماه باقی می‌ماند",
+    "Add what you spend and you will see where it goes.": "مصارف خود را وارد کنید تا ببینید کجا می‌رود.",
+    "of income spent": "از عاید مصرف شده", "Where it went": "کجا مصرف شد",
+    "I owe": "قرضدار استم", "Owes me": "از من قرضدار است", "I owe them": "من از او قرضدار استم", "They owe me": "او از من قرضدار است",
+    "I still owe": "هنوز قرضدار استم", "Still owed to me": "هنوز طلبکار استم",
+    "Road tax": "مالیه سرک", "Council tax": "مالیه شاروالی", "Fuel": "تیل", "Food": "خوراکه", "Stock": "اموال", "Wages paid": "معاش پرداخت‌شده",
+    "Volunteering": "کار رضاکارانه", "Development": "انکشاف شخصی",
+    "What (appointment, job or task)": "چه (ملاقات، کار یا وظیفه)",
+    "Add an appointment, a job or a task for today.": "برای امروز ملاقات، کار یا وظیفه‌ای اضافه کنید.",
+    "Add an appointment, a job or a note.": "ملاقات، کار یا یادداشتی اضافه کنید.",
+    "Fajr": "نماز صبح", "Dhuhr": "نماز پیشین", "Asr": "نماز دیگر", "Maghrib": "نماز شام", "Isha": "نماز خفتن",
+    "Daily prayers, Quran, a good deed, and Friday reminders": "نمازهای پنج‌گانه، قرآن، کار نیک و یادآوری‌های جمعه",
+    "Good afternoon": "بعد از چاشت بخیر", "Good evening": "شام بخیر",
+    "Create an account": "ساختن حساب", "Create account": "ساختن حساب", "Sign out": "خارج شدن",
+    "This browser cannot remember the theme.": "این براوزر نمی‌تواند ظاهر را به یاد داشته باشد.",
+    "Your bills, money, diary and daily practice, encrypted so only you can read them.": "بل‌ها، پول، یادداشت‌ها و برنامه روزانه شما، رمزگذاری‌شده تا فقط خودتان خوانده بتوانید.",
+    "Everything you enter is encrypted on your device. Only you can read it.": "هرچه وارد می‌کنید روی دستگاه شما رمزگذاری می‌شود. فقط شما خوانده می‌توانید."
+  };
+  Object.keys(DARI).forEach(function (k) { out.fa[k] = DARI[k]; });
   window.TADBIR_I18N = out;
 })();
