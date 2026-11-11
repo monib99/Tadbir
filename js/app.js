@@ -252,6 +252,7 @@ function render(){
   var v=S.view;if(v!=="today"&&!has(v))v="today";
   document.querySelectorAll("nav.tabs a").forEach(function(a){a.style.display=(a.dataset.v==="today"||has(a.dataset.v))?"":"none"});
   $("view").innerHTML=v==="bills"?viewBills():v==="money"?viewMoney():v==="diary"?viewDiary():v==="loans"?viewLoans():viewToday();
+  if(S.pop){var pe=$("view").querySelector('[data-act="'+S.pop.a+'"][data-id="'+CSS.escape(S.pop.id)+'"][aria-pressed="true"]');if(pe)pe.classList.add("pop");S.pop=null}
   $("view").style.cssText="display:flex;flex-direction:column;gap:22px";
   document.querySelectorAll("nav.tabs a").forEach(function(a){a.classList.toggle("on",a.dataset.v===v)});
 }
@@ -394,6 +395,7 @@ function noteForm(d){
 /* ---------- actions ---------- */
 $("view").addEventListener("click",function(e){
   var b=e.target.closest("[data-act]");if(!b)return;var a=b.dataset.act,id=b.dataset.id;
+  if(a==="tick-habit"||a==="tick-entry")S.pop={a:a,id:id};
   if(a==="add-bill")billForm();
   else if(a==="edit-bill"){var bl=S.bills.find(function(x){return x.id===id});if(bl)billForm(bl)}
   else if(a==="pay"){var pb=S.bills.find(function(x){return x.id===id});if(pb)payBill(pb)}
@@ -423,6 +425,15 @@ $("view").addEventListener("click",function(e){
 });
 $("gear").addEventListener("click",function(){S.editMods=!S.editMods;S.pick=null;render();window.scrollTo(0,0)});
 document.addEventListener("keydown",function(e){if(e.key==="Escape"&&sheetCtx)closeSheet()});
+
+/* ---------- touch feedback ---------- */
+document.addEventListener("pointerdown",function(e){
+  var t=e.target.closest("button,nav.tabs a");if(!t||t.disabled)return;
+  if(window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+  var r=document.createElement("span");r.className="ripple";r.style.left=e.clientX+"px";r.style.top=e.clientY+"px";
+  document.body.appendChild(r);r.addEventListener("animationend",function(){r.remove()});
+  if(navigator.vibrate)try{navigator.vibrate(8)}catch(x){}
+});
 
 /* ---------- routing ---------- */
 function route(){var h=(location.hash||"").replace("#","");S.view=["today","bills","money","diary","loans"].indexOf(h)>=0?h:"today";render();window.scrollTo(0,0);var v=$("view");v.classList.remove("enter");void v.offsetWidth;v.classList.add("enter")}

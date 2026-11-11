@@ -171,6 +171,12 @@ nav.tabs a{font-size:12px}
 .linkbtn{background:none;border:0;color:var(--accent);padding:10px 0;text-align:left;font-weight:600;min-height:44px}
 .auth{display:flex;flex-direction:column;gap:12px}
 .auth .btn[disabled]{opacity:.6}
+.ripple{position:fixed;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--accent);opacity:.32;pointer-events:none;z-index:30;animation:ripple .5s ease-out forwards}
+@keyframes ripple{to{transform:scale(9);opacity:0}}
+@keyframes pop{0%{transform:scale(.6)}55%{transform:scale(1.25)}100%{transform:scale(1)}}
+.check.pop{animation:pop .38s ease-out}
+.btn,.chip,.iconbtn{transition:transform .12s ease,filter .12s ease}
+.btn:active,.iconbtn:active{filter:brightness(.92)}
 @keyframes up{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:no-preference){
