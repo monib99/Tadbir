@@ -57,6 +57,6 @@
   async function rowKey(K, name) { return hex(await subtle.sign("HMAC", K.hmac, enc.encode(name))); }
 
   var api = { master: master, newRecoveryCode: newRecoveryCode, recoveryKek: recoveryKek, newDataKey: newDataKey,
-    importDataKey: importDataKey, wrap: wrap, unwrap: unwrap, seal: seal, open: open, rowKey: rowKey };
+    importDataKey: importDataKey, b64: b64, unb64: unb64, wrap: wrap, unwrap: unwrap, seal: seal, open: open, rowKey: rowKey };
   if (typeof module !== "undefined" && module.exports) module.exports = api; else root.TC = api;
 })(typeof window !== "undefined" ? window : globalThis);

@@ -16,7 +16,15 @@ Supabase, but **everything a user enters is encrypted on their own device before
   a diary entry.
 - The server can still see: the account email, how many rows an account has, their sizes, and when they
   were last changed.
-- A forgotten password can only be recovered with the recovery code. Nobody running Tadbir can reset it.
+- At sign-up each user chooses what happens if they forget their password:
+  - **Recovery code (most private):** only the user can ever open their data. Without the password and
+    the code, the data cannot be recovered; the user can erase it and start again.
+  - **Reset by email (easier):** the `key-escrow` function keeps a backup of the user's data key, locked
+    with `ESCROW_SECRET` (held only in the function's secrets, not in the database). After an email
+    reset the function hands the key back to that signed-in user. For these users the operator could
+    technically open the data, and the privacy policy must say so.
+- `ESCROW_SECRET` must be a long random value, kept safe, and never changed: changing it breaks email
+  reset for every existing user who chose it.
 
 Code: `js/crypto.js` (encryption), `js/app.js` (app and accounts), `supabase/migrations` (database).
 
@@ -30,7 +38,7 @@ Code: `js/crypto.js` (encryption), `js/app.js` (app and accounts), `supabase/mig
 
 ## Status
 
-Working: accounts, encryption, recovery code, password reset with recovery code, section picker, bills,
+Working: accounts, encryption, both recovery choices, light and dark themes, section picker, bills,
 money, diary, loans, Ibadah checklist, data export, account deletion, offline shell.
 
 Not built yet: shared households (partner sees the same bills), phone notifications, App Store and

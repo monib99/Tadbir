@@ -94,6 +94,7 @@ function viewSetup(){
   return'<section class="sec"><h2>Choose what you want to use</h2><p class="lead">Pick only the parts you need. You can change this any time with the button at the top right.</p><div class="list">'+
     MODULES.map(function(m){var on=!!S.pick[m[0]];return'<div class="row"><button class="check" aria-pressed="'+on+'" aria-label="'+esc(m[1])+'" data-act="toggle-mod" data-id="'+m[0]+'"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></button><div class="main"><span class="t">'+esc(m[1])+(m[0]==="ibadah"?'<span class="ar-s" lang="ar" dir="rtl">عبادة</span>':'')+'</span><span class="s">'+esc(m[2])+'</span></div></div>'}).join("")+
     '</div><div class="actions"><button class="btn" data-act="save-mods">Save</button></div></section>'+
+    '<section class="sec"><h2>Appearance</h2><div class="chips">'+[["auto","Match my phone"],["light","Light"],["dark","Dark"]].map(function(t){return'<button class="chip" aria-pressed="'+(theme()===t[0])+'" data-act="theme" data-t="'+t[0]+'">'+t[1]+'</button>'}).join("")+'</div></section>'+
     (S.unlocked?'<section class="sec"><h2>Your account</h2><div class="list"><div class="row"><div class="main"><span class="t">Download my data</span><span class="s">A readable copy of everything you have entered</span></div><button class="btn small ghost" data-act="export">Download</button></div>'+
     '<div class="row"><div class="main"><span class="t">Sign out</span><span class="s">Locks Tadbir on this device</span></div><button class="btn small ghost" data-act="sign-out">Sign out</button></div>'+
     '<div class="row"><div class="main"><span class="t">Delete my account</span><span class="s">Removes your account and all of your data. This cannot be undone</span></div><button class="btn small danger" data-act="delete-account">Delete</button></div></div></section>':'');
@@ -451,12 +452,18 @@ function viewAuth(){
   var h='<section class="sec auth">';
   if(sc==="signup")h+='<h2>Create your account</h2><p class="lead">Everything you enter is encrypted on your device. Only you can read it.</p>'+msg+'<form data-form="signup" class="auth" novalidate>'+
     authField("email","Email","email","email")+authField("password","Password (10 characters or more)","password","new-password")+authField("password2","Password again","password","new-password")+
+    '<label class="field" for="f-recovery">If I forget my password<select id="f-recovery"><option value="easy">Reset it by email (easier)</option><option value="code">Use a recovery code (most private)</option></select></label>'+
+    '<p class="lead" style="font-size:13px">Reset by email: Tadbir keeps a locked backup of your key so a reset link can reopen your data. Recovery code: nobody but you can ever open your data, and if you lose both the password and the code it is gone for good.</p>'+
     '<button type="submit" class="btn">Create account</button></form><button class="linkbtn" data-act="go" data-s="signin">I already have an account</button>';
-  else if(sc==="forgot")h+='<h2>Forgot your password</h2><p class="lead">We will email you a link. To open your data again you will also need the recovery code you saved when you signed up.</p>'+msg+'<form data-form="forgot" class="auth" novalidate>'+
+  else if(sc==="forgot")h+='<h2>Forgot your password</h2><p class="lead">We will email you a link to choose a new password. If you chose a recovery code at sign-up, have it ready.</p>'+msg+'<form data-form="forgot" class="auth" novalidate>'+
     authField("email","Email","email","email")+'<button type="submit" class="btn">Email me a link</button></form><button class="linkbtn" data-act="go" data-s="signin">Back to sign in</button>';
-  else if(sc==="reset")h+='<h2>Choose a new password</h2><p class="lead">Enter the recovery code you saved when you signed up, then a new password.</p>'+msg+'<form data-form="reset" class="auth" novalidate>'+
-    authField("code","Recovery code","text","off")+authField("password","New password (10 characters or more)","password","new-password")+authField("password2","New password again","password","new-password")+
-    '<button type="submit" class="btn">Save new password</button></form>';
+  else if(sc==="reset"){
+    var md=S.resetMode||"code";
+    h+='<h2>Choose a new password</h2><p class="lead">'+(md==="code"?"Enter the recovery code you saved when you signed up, then a new password.":md==="wipe"?"Your saved data will be erased and you will start again with an empty account.":"Enter a new password. Your data will open with it.")+'</p>'+msg+'<form data-form="reset" class="auth" novalidate>'+
+    (md==="code"?authField("code","Recovery code","text","off"):"")+authField("password","New password (10 characters or more)","password","new-password")+authField("password2","New password again","password","new-password")+
+    '<button type="submit" class="btn">'+(md==="wipe"?"Erase my data and save new password":"Save new password")+'</button></form>'+
+    (md==="code"?'<button class="linkbtn" data-act="reset-wipe">I have lost my recovery code</button>':"");
+  }
   else h+='<h2>Sign in</h2><p class="lead">Your bills, money, diary and daily practice, encrypted so only you can read them.</p>'+msg+'<form data-form="signin" class="auth" novalidate>'+
     authField("email","Email","email","email")+authField("password","Password","password","current-password")+
     '<button type="submit" class="btn">Sign in</button></form><button class="linkbtn" data-act="go" data-s="signup">Create an account</button><button class="linkbtn" data-act="go" data-s="forgot">Forgot your password?</button>';
@@ -468,10 +475,16 @@ async function afterAuth(user,kek,email){
   if(p.error)throw p.error;
   var raw,first=false;
   if(!p.data){
-    raw=TC.newDataKey();var code=TC.newRecoveryCode();
-    var ins=await sb.from("profiles").insert({user_id:user.id,wrapped_key:await TC.wrap(kek,raw),wrapped_key_recovery:await TC.wrap(await TC.recoveryKek(code,email),raw)});
+    raw=TC.newDataKey();
+    var choice=S.recoveryChoice||remembered("tadbir-rc")||"easy",row={user_id:user.id,wrapped_key:await TC.wrap(kek,raw)},code=null;
+    if(choice==="easy"){
+      var er=null;try{er=await sb.functions.invoke("key-escrow",{body:{action:"wrap",key:TC.b64(raw)}})}catch(x){}
+      if(er&&!er.error&&er.data&&er.data.blob)row.escrow_key=er.data.blob;else choice="code";
+    }
+    if(choice==="code"){code=TC.newRecoveryCode();row.wrapped_key_recovery=await TC.wrap(await TC.recoveryKek(code,email),raw)}
+    var ins=await sb.from("profiles").insert(row);
     if(ins.error)throw ins.error;
-    S.recoveryCode=code;first=true;
+    S.recoveryCode=code;first=!!code;
   }else{
     try{raw=await TC.unwrap(kek,p.data.wrapped_key)}catch(e){throw new Error("This password does not open your data. Use Forgot your password and enter your recovery code.")}
   }
@@ -479,6 +492,10 @@ async function afterAuth(user,kek,email){
   await loadAll();
   S.unlocked=true;S.privLoaded=true;S.authMsg="";S.screen=first?"code":null;render();
 }
+function theme(){var t=remembered("tadbir-theme");return t==="light"||t==="dark"?t:"auto"}
+function applyTheme(){var t=theme(),el=document.documentElement;if(t==="auto")el.removeAttribute("data-theme");else el.setAttribute("data-theme",t);
+  var dark=t==="dark"||(t==="auto"&&window.matchMedia("(prefers-color-scheme:dark)").matches),m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",dark?"#0e1513":"#0e4a3c")}
+function remembered(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lock(){K=null;S.uid=null;S.unlocked=false;S.privLoaded=false;S.bills=[];S.txns=[];S.diary=[];S.priv=[];S.editMods=false;S.pick=null;S.screen="signin";note("");render()}
 $("view").addEventListener("submit",async function(e){
   var f=e.target.closest("form[data-form]");if(!f)return;e.preventDefault();
@@ -498,14 +515,24 @@ $("view").addEventListener("submit",async function(e){
     }
     if(kind==="reset"){
       var u=(await sb.auth.getUser()).data.user;if(!u)throw new Error("The link has expired. Ask for a new one.");
-      var p=await sb.from("profiles").select("wrapped_key_recovery").eq("user_id",u.id).maybeSingle();if(p.error)throw p.error;
-      var m2=await TC.master(pw,u.email),raw=null;
-      if(p.data){try{raw=await TC.unwrap(await TC.recoveryKek(val("code"),u.email),p.data.wrapped_key_recovery)}catch(x){throw new Error("That recovery code is not right.")}}
+      var md=S.resetMode||"code",m2=await TC.master(pw,u.email),raw=null;
+      if(md==="code"){
+        var p=await sb.from("profiles").select("wrapped_key_recovery").eq("user_id",u.id).maybeSingle();if(p.error)throw p.error;
+        if(p.data){try{raw=await TC.unwrap(await TC.recoveryKek(val("code"),u.email),p.data.wrapped_key_recovery)}catch(x){throw new Error("That recovery code is not right.")}}
+      }else if(md==="easy"){
+        var er=await sb.functions.invoke("key-escrow",{body:{action:"unwrap"}});
+        if(er.error||!er.data||!er.data.key)throw new Error("Your data could not be reopened right now. Try again in a few minutes.");
+        raw=TC.unb64(er.data.key);
+      }else if(md==="wipe"){
+        var d1=await sb.from("items").delete().eq("user_id",u.id);if(d1.error)throw d1.error;
+        var d2=await sb.from("profiles").delete().eq("user_id",u.id);if(d2.error)throw d2.error;
+      }
       var up=await sb.auth.updateUser({password:m2.authPw});if(up.error)throw up.error;
       if(raw){var pr=await sb.from("profiles").update({wrapped_key:await TC.wrap(m2.kek,raw),updated_at:new Date().toISOString()}).eq("user_id",u.id);if(pr.error)throw pr.error}
       await afterAuth(u,m2.kek,u.email);return;
     }
     if(!email||!pw)throw new Error("Enter your email and password.");
+    if(kind==="signup"&&$("f-recovery")){S.recoveryChoice=$("f-recovery").value;try{localStorage.setItem("tadbir-rc",S.recoveryChoice)}catch(x){}}
     var m=await TC.master(pw,email);
     var r=kind==="signup"?await sb.auth.signUp({email:email,password:m.authPw,options:{emailRedirectTo:here()}}):await sb.auth.signInWithPassword({email:email,password:m.authPw});
     if(r.error)throw r.error;
@@ -520,6 +547,10 @@ $("view").addEventListener("submit",async function(e){
 $("view").addEventListener("click",async function(e){
   var b=e.target.closest("[data-act]");if(!b)return;var a=b.dataset.act;
   if(a==="go"){S.screen=b.dataset.s;S.authMsg="";render()}
+  else if(a==="theme"){try{localStorage.setItem("tadbir-theme",b.dataset.t)}catch(x){toast("This browser cannot remember the theme.")}applyTheme();render()}
+  else if(a==="reset-wipe"){
+    if(!b.dataset.sure){b.dataset.sure="1";b.textContent="Tap again: without the code your saved data cannot be recovered and will be erased";return}
+    S.resetMode="wipe";S.authMsg="";render()}
   else if(a==="copy-code"){try{await navigator.clipboard.writeText(S.recoveryCode);toast("Recovery code copied.")}catch(x){toast("Could not copy. Write the code down instead.")}}
   else if(a==="code-saved"){S.recoveryCode=null;S.screen=null;render()}
   else if(a==="sign-out"){if(sb)await sb.auth.signOut();lock()}
@@ -538,10 +569,20 @@ document.addEventListener("visibilitychange",function(){
 });
 
 /* ---------- start ---------- */
+applyTheme();
 var cfg=window.TADBIR_CONFIG||{};
 if(cfg.url&&cfg.key&&window.supabase&&window.TC){
   sb=window.supabase.createClient(cfg.url,cfg.key,{auth:{persistSession:false,autoRefreshToken:true,detectSessionInUrl:true}});
-  sb.auth.onAuthStateChange(function(ev){if(ev==="PASSWORD_RECOVERY"){S.screen="reset";S.authMsg="";render()}});
+  sb.auth.onAuthStateChange(function(ev,session){
+    if(ev!=="PASSWORD_RECOVERY")return;
+    S.screen="reset";S.resetMode="code";S.authMsg="";render();
+    setTimeout(async function(){
+      if(!session||!session.user)return;
+      var p=await sb.from("profiles").select("escrow_key").eq("user_id",session.user.id).maybeSingle();
+      if(p.error)return;
+      S.resetMode=!p.data?"new":p.data.escrow_key?"easy":"code";render();
+    },0);
+  });
   S.screen="signin";
 }else{
   S.privLoaded=true;
